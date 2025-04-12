@@ -6,10 +6,10 @@ if "fan_mode" not in st.session_state:
     st.session_state.fan1_state = "HIGH"  # Lüfter 1 (aus)
     st.session_state.fan2_state = "HIGH"  # Lüfter 2 (aus)
     st.session_state.relais_states = {"Lüfter 1": "HIGH", "Lüfter 2": "HIGH", "ECU Mainswitch": "HIGH",
-                                      "Zündung": "HIGH", "Haldex": "HIGH", "Servolenkung": "HIGH", "Lüfter": "HIGH", "Licht": "HIGH"}
+                                      "Zündung": "HIGH", "Haldex": "HIGH", "Servolenkung": "HIGH", "Lüfter": "HIGH"}
 
     # Initialisieren der Labels für jedes Relais
-    for relais in ["ECU Mainswitch", "Zündung", "Haldex", "Servolenkung", "Lüfter 1", "Lüfter 2", "Lüfter", "Licht"]:
+    for relais in ["ECU Mainswitch", "Zündung", "Haldex", "Servolenkung", "Lüfter 1", "Lüfter 2", "Lüfter"]:
         st.session_state[f"{relais}_label"] = f"{relais} - Aus"
         st.session_state[f"{relais}_color"] = "red"
 
@@ -50,7 +50,7 @@ def update_button_state():
         st.session_state.fan2_color = "red"
 
     # Für alle Relais-Buttons
-    for name in ["ECU Mainswitch", "Zündung", "Haldex", "Servolenkung", "Lüfter", "Licht"]:
+    for name in ["ECU Mainswitch", "Zündung", "Haldex", "Servolenkung", "Lüfter"]:
         if st.session_state.relais_states[name] == "LOW":
             st.session_state[f"{name}_color"] = "green"
             st.session_state[f"{name}_label"] = f"{name} - Ein"
@@ -62,7 +62,7 @@ def update_button_state():
 st.title("Relais Steuerung (Web Version)")
 
 # Anzeige der Buttons für alle Relais
-col1, col2, col3 = st.columns(3)
+col1, col2 = st.columns(2)
 
 # Relais-Schaltflächen für alle Relais
 with col1:
@@ -75,14 +75,6 @@ with col1:
 
 with col2:
     for i, relais in enumerate(["Servolenkung", "Lüfter 1", "Lüfter 2"]):
-        st.button(st.session_state[f"{relais}_label"], key=relais, on_click=toggle_relay, args=(relais,))
-        st.markdown(
-            f"<div style='background-color:{st.session_state[f'{relais}_color']};width:50px;height:50px;border-radius:25px;'></div>",
-            unsafe_allow_html=True,
-        )
-
-with col3:
-    for i, relais in enumerate(["Lüfter", "Licht"]):
         st.button(st.session_state[f"{relais}_label"], key=relais, on_click=toggle_relay, args=(relais,))
         st.markdown(
             f"<div style='background-color:{st.session_state[f'{relais}_color']};width:50px;height:50px;border-radius:25px;'></div>",
