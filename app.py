@@ -1,46 +1,48 @@
 import streamlit as st
 
-# "GPIO"-Simulation
-if "gpio" not in st.session_state:
-    st.session_state.gpio = {
-        22: "HIGH",
-        27: "HIGH",
-        5: "HIGH",
-        6: "HIGH",
-        26: "HIGH",
-        25: "HIGH"
-    }
-    st.session_state.fan_state = "Auto"
+# Initialisierung des Status
+if "fan_mode" not in st.session_state:
+    st.session_state.fan_mode = "Auto"
+    st.session_state.fan1_state = "HIGH"  # Lüfter 1 Relais (aus)
+    st.session_state.fan2_state = "HIGH"  # Lüfter 2 Relais (aus)
 
-relais_names = {
-    22: "ECU Mainswitch",
-    27: "Zündung",
-    5: "Haldex",
-    6: "Servolenkung",
-    26: "Lüfter",
-    25: "Licht"
-}
+# Funktionslogik, um Relais zu schalten
+def toggle_fan_relay(relay_id):
+    # Wenn beide Lüfter "Aus" sind, gehe zurück in den "Auto"-Modus
+    if st.session_state.fan1_state == "HIGH" and st.session_state.fan2_state == "HIGH":
+        st.session_state.fan_mode = "Auto"
 
-st.title("Relais Steuerung (Simulation)")
+    # Wenn Relais in "Auto" ist, wechsle auf "Manuell"
+    if st.session_state.fan_mode == "Auto":
+        st.session_state.fan_mode = "Manuell"
 
-for pin in st.session_state.gpio.keys():
-    col1, col2 = st.columns([3, 1])
+    # Steuerung der Relais
+    if relay_id == 1:
+        st.session_state.fan1_state = "LOW" if st.session_state.fan1_state == "HIGH" else "HIGH"
+    elif relay_id == 2:
+        st.session_state.fan2_state = "LOW" if st.session_state.fan2_state == "HIGH" else "HIGH"
 
-    with col1:
-        if pin == 26:
-            label = f"{relais_names[pin]} ({st.session_state.fan_state})"
-        else:
-            label = f"{relais_names[pin]}"
+# Benutzeroberfläche in Streamlit
+st.title("Relais Steuerung (Web Version)")
 
-        state = st.session_state.gpio[pin]
-        color = "green" if state == "LOW" else "red"
-        if st.button(f"{label} - {'Ein' if state == 'LOW' else 'Aus'}", key=pin):
-            if pin == 26:
-                st.session_state.fan_state = "Manuell" if st.session_state.fan_state == "Auto" else "Auto"
-            st.session_state.gpio[pin] = "HIGH" if state == "LOW" else "LOW"
+col1, col2 = st.columns(2)
 
-    with col2:
+for i, relay in enumerate([1, 2]):
+    state = (
+        "LOW"
+        if (relay == 1 and st.session_state.fan1_state == "LOW")
+        or (relay == 2 and st.session_state.fan2_state == "LOW")
+        else "HIGH"
+    )
+    label = f"Lüfter {relay} ({st.session_state.fan_mode}) - {'Ein' if state == 'LOW' else 'Aus'}"
+    color = "green" if state == "LOW" else "red"
+
+    with (col1 if relay == 1 else col2):
+        if st.button(label, key=f"fan_{relay}"):
+            toggle_fan_relay(relay)
+
+        # Relaisstatus anzeigen
         st.markdown(
             f"<div style='background-color:{color};width:50px;height:50px;border-radius:25px;'></div>",
-            unsafe_allow_html=True
+            unsafe_allow_html=True,
         )
