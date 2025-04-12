@@ -10,7 +10,7 @@ if "fan_mode" not in st.session_state:
 
     # Initialisieren der Labels für jedes Relais
     for relais in ["ECU Mainswitch", "Zündung", "Haldex", "Servolenkung", "Lüfter 50%", "Lüfter 100%", "Lüfter"]:
-        st.session_state[f"{relais}_label"] = f"{relais} - Aus"
+        st.session_state[f"{relais}_label"] = f"{relais} - Auto"
         st.session_state[f"{relais}_color"] = "red"
 
 # Funktionslogik, um Relais zu schalten
@@ -18,6 +18,7 @@ def toggle_relay(relay_name):
     # Wenn beide Lüfter aus sind, gehe zurück zu Auto-Modus
     if st.session_state.relais_states["Lüfter 50%"] == "HIGH" and st.session_state.relais_states["Lüfter 100%"] == "HIGH":
         st.session_state.fan_mode = "Auto"
+    
     # Wenn der Modus Auto ist, wechsle auf Manuell
     if st.session_state.fan_mode == "Auto":
         st.session_state.fan_mode = "Manuell"
@@ -35,18 +36,18 @@ def toggle_relay(relay_name):
 def update_button_state():
     # Lüfter 50% (Pin 26)
     if st.session_state.relais_states["Lüfter 50%"] == "LOW":
-        st.session_state.fan1_label = f"Lüfter 50% ({st.session_state.fan_mode}) - Ein"
+        st.session_state.fan1_label = f"Lüfter 50% (Manuell) - Ein"
         st.session_state.fan1_color = "green"
     else:
-        st.session_state.fan1_label = f"Lüfter 50% ({st.session_state.fan_mode}) - Aus"
+        st.session_state.fan1_label = f"Lüfter 50% (Auto) - Aus"
         st.session_state.fan1_color = "red"
 
     # Lüfter 100% (Pin 25)
     if st.session_state.relais_states["Lüfter 100%"] == "LOW":
-        st.session_state.fan2_label = f"Lüfter 100% ({st.session_state.fan_mode}) - Ein"
+        st.session_state.fan2_label = f"Lüfter 100% (Manuell) - Ein"
         st.session_state.fan2_color = "green"
     else:
-        st.session_state.fan2_label = f"Lüfter 100% ({st.session_state.fan_mode}) - Aus"
+        st.session_state.fan2_label = f"Lüfter 100% (Auto) - Aus"
         st.session_state.fan2_color = "red"
 
     # Für alle Relais-Buttons
