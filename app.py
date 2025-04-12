@@ -3,50 +3,50 @@ import streamlit as st
 # Initialisierungen
 if "fan_mode" not in st.session_state:
     st.session_state.fan_mode = "Auto"
-    st.session_state.fan1_state = "HIGH"  # Lüfter 1 (aus)
-    st.session_state.fan2_state = "HIGH"  # Lüfter 2 (aus)
-    st.session_state.relais_states = {"Lüfter 1": "HIGH", "Lüfter 2": "HIGH", "ECU Mainswitch": "HIGH",
+    st.session_state.fan1_state = "HIGH"  # Lüfter 50% (aus)
+    st.session_state.fan2_state = "HIGH"  # Lüfter 100% (aus)
+    st.session_state.relais_states = {"Lüfter 50%": "HIGH", "Lüfter 100%": "HIGH", "ECU Mainswitch": "HIGH",
                                       "Zündung": "HIGH", "Haldex": "HIGH", "Servolenkung": "HIGH", "Lüfter": "HIGH"}
 
     # Initialisieren der Labels für jedes Relais
-    for relais in ["ECU Mainswitch", "Zündung", "Haldex", "Servolenkung", "Lüfter 1", "Lüfter 2", "Lüfter"]:
+    for relais in ["ECU Mainswitch", "Zündung", "Haldex", "Servolenkung", "Lüfter 50%", "Lüfter 100%", "Lüfter"]:
         st.session_state[f"{relais}_label"] = f"{relais} - Aus"
         st.session_state[f"{relais}_color"] = "red"
 
 # Funktionslogik, um Relais zu schalten
 def toggle_relay(relay_name):
     # Wenn beide Lüfter aus sind, gehe zurück zu Auto-Modus
-    if st.session_state.relais_states["Lüfter 1"] == "HIGH" and st.session_state.relais_states["Lüfter 2"] == "HIGH":
+    if st.session_state.relais_states["Lüfter 50%"] == "HIGH" and st.session_state.relais_states["Lüfter 100%"] == "HIGH":
         st.session_state.fan_mode = "Auto"
     # Wenn der Modus Auto ist, wechsle auf Manuell
     if st.session_state.fan_mode == "Auto":
         st.session_state.fan_mode = "Manuell"
 
-    # Wechsel Relais-Zustand für Lüfter 1 oder 2
-    if relay_name == "Lüfter 1":
-        st.session_state.relais_states["Lüfter 1"] = "LOW" if st.session_state.relais_states["Lüfter 1"] == "HIGH" else "HIGH"
-    elif relay_name == "Lüfter 2":
-        st.session_state.relais_states["Lüfter 2"] = "LOW" if st.session_state.relais_states["Lüfter 2"] == "HIGH" else "HIGH"
+    # Wechsel Relais-Zustand für Lüfter 50% oder Lüfter 100%
+    if relay_name == "Lüfter 50%":
+        st.session_state.relais_states["Lüfter 50%"] = "LOW" if st.session_state.relais_states["Lüfter 50%"] == "HIGH" else "HIGH"
+    elif relay_name == "Lüfter 100%":
+        st.session_state.relais_states["Lüfter 100%"] = "LOW" if st.session_state.relais_states["Lüfter 100%"] == "HIGH" else "HIGH"
     else:
         st.session_state.relais_states[relay_name] = "LOW" if st.session_state.relais_states[relay_name] == "HIGH" else "HIGH"
 
     update_button_state()
 
 def update_button_state():
-    # Lüfter 1 (Pin 26)
-    if st.session_state.relais_states["Lüfter 1"] == "LOW":
-        st.session_state.fan1_label = f"Lüfter 1 ({st.session_state.fan_mode}) - Ein"
+    # Lüfter 50% (Pin 26)
+    if st.session_state.relais_states["Lüfter 50%"] == "LOW":
+        st.session_state.fan1_label = f"Lüfter 50% ({st.session_state.fan_mode}) - Ein"
         st.session_state.fan1_color = "green"
     else:
-        st.session_state.fan1_label = f"Lüfter 1 ({st.session_state.fan_mode}) - Aus"
+        st.session_state.fan1_label = f"Lüfter 50% ({st.session_state.fan_mode}) - Aus"
         st.session_state.fan1_color = "red"
 
-    # Lüfter 2 (Pin 25)
-    if st.session_state.relais_states["Lüfter 2"] == "LOW":
-        st.session_state.fan2_label = f"Lüfter 2 ({st.session_state.fan_mode}) - Ein"
+    # Lüfter 100% (Pin 25)
+    if st.session_state.relais_states["Lüfter 100%"] == "LOW":
+        st.session_state.fan2_label = f"Lüfter 100% ({st.session_state.fan_mode}) - Ein"
         st.session_state.fan2_color = "green"
     else:
-        st.session_state.fan2_label = f"Lüfter 2 ({st.session_state.fan_mode}) - Aus"
+        st.session_state.fan2_label = f"Lüfter 100% ({st.session_state.fan_mode}) - Aus"
         st.session_state.fan2_color = "red"
 
     # Für alle Relais-Buttons
@@ -74,7 +74,8 @@ with col1:
         )
 
 with col2:
-    for i, relais in enumerate(["Servolenkung", "Lüfter 1", "Lüfter 2"]):
+    # Lüfter 50% und Lüfter 100% Buttons
+    for i, relais in enumerate(["Servolenkung", "Lüfter 50%", "Lüfter 100%"]):
         st.button(st.session_state[f"{relais}_label"], key=relais, on_click=toggle_relay, args=(relais,))
         st.markdown(
             f"<div style='background-color:{st.session_state[f'{relais}_color']};width:50px;height:50px;border-radius:25px;'></div>",
