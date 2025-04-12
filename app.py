@@ -1,6 +1,6 @@
 import streamlit as st
 
-# Initialisierung der "GPIO"-Zustände
+# "GPIO"-Simulation
 if "gpio" not in st.session_state:
     st.session_state.gpio = {
         22: "HIGH",
@@ -40,4 +40,7 @@ for pin in st.session_state.gpio.keys():
             st.session_state.gpio[pin] = "HIGH" if state == "LOW" else "LOW"
 
     with col2:
-        st.markdown(f"<div style='background-color:{color};width:50px;height:50px;border-radius:25px;'></div>", unsafe_allow_html=True)
+        st.markdown(
+            f"<div style='background-color:{color};width:50px;height:50px;border-radius:25px;'></div>",
+            unsafe_allow_html=True
+        )
